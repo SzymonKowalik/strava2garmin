@@ -12,6 +12,11 @@ Tested with Virtual Rides from:
 - Rouvy
 
 ### Usage
+To authenticate with Garmin set up environmental variables or .env file (in the project root):
+```
+GARMIN_LOGIN=
+GARMIN_PASSWORD=
+```
 Install required dependencies
 `pip install -r requirements.txt`<br>
 Place activities from strava into `original` directory<br>

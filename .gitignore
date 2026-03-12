@@ -1,4 +1,5 @@
 .idea/
-original/
-processed/
-activity_registry.json
+original/*
+processed/*
+data/*
+.env
