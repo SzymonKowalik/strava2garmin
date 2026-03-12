@@ -1,0 +1,4 @@
+bitstruct==8.22.1
+et_xmlfile==2.0.0
+fit-tool==0.9.15
+openpyxl==3.1.5
