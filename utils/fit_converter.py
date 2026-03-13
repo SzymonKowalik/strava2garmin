@@ -1,6 +1,4 @@
-import os
-from operator import truediv
-
+from pathlib import Path
 from fit_tool.fit_file import FitFile
 from fit_tool.fit_file_builder import FitFileBuilder
 from fit_tool.data_message import DataMessage
@@ -9,17 +7,17 @@ from fit_tool.profile.messages.device_info_message import DeviceInfoMessage
 
 class FitConverter:
     @staticmethod
-    def convert(input_path: str, output_path: str) -> bool:
+    def convert(input_path: Path, output_path: Path) -> bool:
         # Garmin specific IDs
         GARMIN_MANUFACTURER_ID = 1
         FR955_PRODUCT_ID = 4024
 
-        filename = os.path.basename(input_path)
+        filename = input_path.name
 
         print(f"Processing: {filename}")
 
         try:
-            fit_file = FitFile.from_file(input_path)
+            fit_file = FitFile.from_file(str(input_path))
             builder = FitFileBuilder(auto_define=True)
 
             for record in fit_file.records:
@@ -59,7 +57,7 @@ class FitConverter:
                     builder.add(message)
 
             modified_file = builder.build()
-            modified_file.to_file(output_path)
+            modified_file.to_file(str(output_path))
             print(f" -> Successfully saved to {output_path}")
             return True
 
