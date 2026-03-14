@@ -1,5 +1,4 @@
 .idea/
-original/*
-processed/*
+activities/*
 data/*
 .env

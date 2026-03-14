@@ -1,39 +1,34 @@
 import json
-import hashlib
 from pathlib import Path
 
 class ActivityRegistry:
     def __init__(self, file_path: Path):
         self.file_path: Path = file_path
-        self.processed_activities: set = self.load_processed_activities()
+        self.processed_activities: dict = self.load_processed_activities()
 
-    def load_processed_activities(self) -> set:
+    def load_processed_activities(self) -> dict:
         # Create if not exists or load file data
         if not self.file_path.exists():
-            return set()
+            return dict()
 
         try:
             with open(self.file_path, "r", encoding="UTF-8") as f:
-                data = json.load(f)
-                return set(data)
+                return json.load(f)
         except (json.JSONDecodeError, OSError):
-            return set()
+            return dict()
 
-    @staticmethod
-    def _generate_hash(file_path: Path) -> str:
-        hash_md5 = hashlib.md5()
-        with open(file_path, "rb") as f:
-            # Read in chunks to handle large files efficiently
-            for chunk in iter(lambda: f.read(4096), b""):
-                hash_md5.update(chunk)
-        return hash_md5.hexdigest()
+    def is_processed(self, activity_id: str) -> bool:
+        is_processed = self.processed_activities.get(activity_id)
 
-    def is_processed(self, file_path: Path) -> bool:
-        return self._generate_hash(file_path) in self.processed_activities
+        if not is_processed:
+            self.processed_activities[activity_id] = False
 
-    def add_activity(self, file_path: Path) -> None:
-        self.processed_activities.add(self._generate_hash(file_path))
+        return is_processed
 
-    def save(self) -> None:
+    def mark_processed(self, activity_id: str) -> None:
+        self.processed_activities[activity_id] = True
+        self._save()
+
+    def _save(self) -> None:
         with open(self.file_path, "w", encoding="UTF-8") as f:
-            json.dump(list(self.processed_activities), f)
+            json.dump(self.processed_activities, f)
