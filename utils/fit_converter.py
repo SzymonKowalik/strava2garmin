@@ -1,4 +1,3 @@
-from datetime import datetime
 from pathlib import Path
 from fit_tool.fit_file_builder import FitFileBuilder
 from fit_tool.profile.messages.activity_message import ActivityMessage
@@ -7,13 +6,13 @@ from fit_tool.profile.messages.device_info_message import DeviceInfoMessage
 from fit_tool.profile.messages.record_message import RecordMessage
 from fit_tool.profile.messages.session_message import SessionMessage
 from fit_tool.profile.messages.sport_message import SportMessage
-
+from .strava_activity import StravaActivity
 
 class FitConverter:
     @staticmethod
-    def create_from_streams(streams: dict, start_date: datetime, output_path: Path) -> bool:
+    def create_from_streams(streams: dict, activity: StravaActivity, output_path: Path) -> bool:
         builder = FitFileBuilder(auto_define=True)
-        start_timestamp_ms = int(start_date.timestamp() * 1000)
+        start_timestamp_ms = int(activity.start_date.timestamp() * 1000)
 
         # Setup Device
         file_id = FileIdMessage()
@@ -81,6 +80,7 @@ class FitConverter:
         session.start_time = start_timestamp_ms
         session.total_elapsed_time = total_elapsed
         session.total_timer_time = total_elapsed
+        session.total_calories = int(activity.calories)
         if 'distance' in streams:
             session.total_distance = streams['distance'][-1]
         if 'watts' in streams:

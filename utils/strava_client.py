@@ -1,15 +1,10 @@
 import os
 import json
-from datetime import datetime
 from pathlib import Path
 from stravalib.client import Client
 from urllib.parse import urlparse, parse_qs
-from . import FitConverter
-
-class StravaActivity:
-    def __init__(self, activity_id: int, start_date: datetime):
-        self.id: int = activity_id
-        self.start_date: datetime = start_date
+from .fit_converter import FitConverter
+from .strava_activity import StravaActivity
 
 class StravaClient:
     def __init__(self, data_dir: Path, input_dir: Path):
@@ -111,7 +106,7 @@ class StravaClient:
                 continue
 
             filtered_activities.append(
-                StravaActivity(activity.id, activity.start_date)
+                StravaActivity(activity.id, activity.start_date, activity.kilojoules)
             )
 
         print(f"Strava - Activities fetched and filtered")
@@ -134,7 +129,7 @@ class StravaClient:
         file_path = self.input_dir / f"{activity.id}.fit"
 
         print(f"Strava - Downloading activity with id: {activity.id}")
-        if FitConverter.create_from_streams(serializable_data, activity.start_date, file_path):
+        if FitConverter.create_from_streams(serializable_data, activity, file_path):
             return file_path
 
         else:

@@ -3,7 +3,6 @@ import os
 from garth.exc import GarthHTTPError
 from pathlib import Path
 
-
 class GarminClient:
     def __init__(self, data_dir: Path):
         self.garth_path: Path = data_dir / ".garth"
