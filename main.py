@@ -9,12 +9,13 @@ def batch_convert_fit_files():
     activity_limit = 25
 
     # Configure paths
-    activities_dir = Path('activities')
-    data_dir = Path('data')
+    base_dir = Path(__file__).resolve().parent
+    activities_dir = base_dir / Path('activities')
+    data_dir = base_dir / Path('data')
     registry_file = 'activity_registry.json'
 
     # Load .env variables
-    load_dotenv()
+    load_dotenv(base_dir / ".env")
 
     activities_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
