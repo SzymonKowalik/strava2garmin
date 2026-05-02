@@ -14,6 +14,8 @@ class FitConverter:
         builder = FitFileBuilder(auto_define=True)
         start_timestamp_ms = int(activity.start_date.timestamp() * 1000)
 
+        # Check activity type
+        is_virtual = activity.type == "VirtualRide"
         # Setup Device
         file_id = FileIdMessage()
         file_id.manufacturer = 1  # Garmin
@@ -32,12 +34,14 @@ class FitConverter:
         # Sport Message defines the type of activity
         sport = SportMessage()
         sport.sport = 2  # Cycling
-        sport.sub_sport = 58  # Virtual
-        sport.name = "Virtual Cycling"
+        sport.sub_sport = 58 if is_virtual else 0
+        sport.name = "Virtual Cycling" if is_virtual else "Cycling"
         builder.add(sport)
 
         # Iterate through stream data
         num_records = len(streams['time'])
+        moving_stream = streams.get('moving', [True] * num_records)
+        moving_time_seconds = moving_stream.count(True)
 
         for i in range(num_records):
             record = RecordMessage()
@@ -70,6 +74,9 @@ class FitConverter:
             if 'grade_smooth' in streams:
                 record.grade = streams['grade_smooth'][i]
 
+            if 'moving' in streams:
+                record.moving = streams['moving'][i]
+
             builder.add(record)
 
         # Create activity summary
@@ -79,14 +86,14 @@ class FitConverter:
         session.timestamp = start_timestamp_ms + int(total_elapsed * 1000)
         session.start_time = start_timestamp_ms
         session.total_elapsed_time = total_elapsed
-        session.total_timer_time = total_elapsed
+        session.total_timer_time = moving_time_seconds
         session.total_calories = int(activity.calories)
         if 'distance' in streams:
             session.total_distance = streams['distance'][-1]
         if 'watts' in streams:
             session.avg_power = sum(streams['watts']) / len(streams['watts'])  # Simple average
         session.sport = 2
-        session.sub_sport = 58
+        session.sub_sport = 58 if is_virtual else 0
         builder.add(session)
 
         activity_msg = ActivityMessage()

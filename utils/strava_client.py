@@ -102,12 +102,24 @@ class StravaClient:
         filtered_activities: list[StravaActivity] = []
 
         for activity in activities:
-            if activity.sport_type.root != "VirtualRide":
-                continue
+            to_append = False
 
-            filtered_activities.append(
-                StravaActivity(activity.id, activity.start_date, activity.kilojoules)
-            )
+            if activity.sport_type.root == "VirtualRide":
+                to_append = True
+            elif activity.sport_type.root == "Ride":
+                detailed_activity = self.client.get_activity(activity.id)
+                if "iGPSPORT".lower() in detailed_activity.device_name.lower():
+                    to_append = True
+
+            if to_append:
+                filtered_activities.append(
+                    StravaActivity(
+                        activity.id,
+                        activity.start_date,
+                        activity.kilojoules,
+                        activity.sport_type.root
+                    )
+                )
 
         print(f"Strava - Activities fetched and filtered")
         return filtered_activities

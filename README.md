@@ -1,14 +1,13 @@
 ## strava2garmin
 
 ### Description
-Downloads Virtual Rides from Strava and adds Garmin device info: manufacturer (garmin) and product (fr955).
+Downloads Cycling Virtual Rides and Rides from Strava and adds Garmin device info: manufacturer (garmin) and product (fr955).
 It makes those files compatible with Garmin's training features.
 
 ### Compatibility
-Tested with Virtual Rides from:
-- BikeTerra
-- MyWhoosh
-- Rouvy
+Works with:
+- Virtual Rides (BikeTerra, MyWhoosh, Rouvy, etc.)
+- Rides (iGPSPORT bike computer)
 
 ### Usage
 To authenticate with Strava and Garmin, create environmental variables or .env file (in the project root):
