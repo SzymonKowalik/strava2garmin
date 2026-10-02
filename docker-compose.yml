@@ -4,7 +4,7 @@ services:
     container_name: strava2garmin
     restart: unless-stopped
     env_file:
-      - .env
+      - ./app/.env
     volumes:
-      - ./data:/app/data
-      - ./activities:/app/activities
+      - ./app/data:/app/data
+      - ./app/activities:/app/activities

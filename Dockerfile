@@ -7,8 +7,8 @@ COPY ./requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY ./utils/ ./utils/
-COPY ./sync.py .
+COPY app/utils/ ./utils/
+COPY app/sync.py .
 
 # Run python script periodically every hour
 CMD ["bash", "-c", "while true; do python -u sync.py; echo 'Sleeping for 1 hour...'; sleep 3600; done"]

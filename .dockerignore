@@ -4,5 +4,5 @@
 .idea
 __pycache__
 .env
-data/
-activities/
+app/data/
+app/activities/

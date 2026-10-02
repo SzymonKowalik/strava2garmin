@@ -1,5 +1,5 @@
 .idea/
-activities/*
-data/*
+app/activities/*
+app/data/*
 .env
 __pycache__/
