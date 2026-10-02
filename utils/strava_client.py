@@ -13,7 +13,7 @@ class StravaClient:
         self.strava_dir: Path = data_dir / Path("strava")
         self.strava_dir.mkdir(parents=True, exist_ok=True)
 
-        self.token_path: Path = self.strava_dir / ".strava_token.json"
+        self.token_path: Path = self.strava_dir / ".strava_token.json.old"
 
         self.client_id: int = int(os.getenv("STRAVA_CLIENT_ID"))
         self.client_secret: str = os.getenv("STRAVA_CLIENT_SECRET")
