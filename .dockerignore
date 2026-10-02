@@ -1,0 +1,8 @@
+.venv
+.venv2
+.git
+.idea
+__pycache__
+.env
+data/
+activities/

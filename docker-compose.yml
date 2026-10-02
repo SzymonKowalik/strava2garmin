@@ -1,0 +1,10 @@
+services:
+  strava2garmin:
+    build: .
+    container_name: strava2garmin
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./activities:/app/activities

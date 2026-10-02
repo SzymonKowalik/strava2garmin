@@ -4,9 +4,13 @@ from utils import StravaClient
 from utils import DATA_DIR, ACTIVITIES_DIR, ACTIVITY_LIMIT, REGISTRY_PATH
 
 def batch_convert_fit_files():
-    # Authenticate with data sources
-    strava_client = StravaClient(DATA_DIR, ACTIVITIES_DIR)
-    garmin_client = GarminClient(DATA_DIR)
+    try:
+        # Authenticate with data sources
+        strava_client = StravaClient(DATA_DIR, ACTIVITIES_DIR)
+        garmin_client = GarminClient(DATA_DIR)
+    except Exception as e:
+        print(f"Could not connect to services. Error message: {e}")
+        exit(1)
 
     # Loop through activities
     activities = strava_client.get_filtered_activities(ACTIVITY_LIMIT)
