@@ -41,5 +41,6 @@ def batch_convert_fit_files():
             activity_registry.mark_processed(str(activity.id))
 
     print("All files have been processed.")
+
 if __name__ == '__main__':
     batch_convert_fit_files()
