@@ -104,6 +104,10 @@ class StravaClient:
         for activity in activities:
             to_append = False
 
+            # Skip zwift activities - native garmin connection
+            if (activity.external_id or "").startswith('zwift'):
+                continue
+
             if activity.sport_type.root == "VirtualRide":
                 to_append = True
             elif activity.sport_type.root == "Ride":

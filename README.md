@@ -9,6 +9,8 @@ Works with:
 - Virtual Rides (BikeTerra, MyWhoosh, Rouvy, etc.)
 - Rides (iGPSPORT bike computer)
 
+**Note:** Zwift activities are skipped because they are natively compatible with Garmin Connect.
+
 ### Usage
 1. Create a [Strava API application](https://developers.strava.com/docs/getting-started/#account).
 2. To authenticate with Strava and Garmin, create environment variables or `.env` file with content from `.env.example` file in the `app` folder.
