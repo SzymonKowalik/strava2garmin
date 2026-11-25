@@ -1,8 +1,9 @@
-import os
 import json
+import sys
 from pathlib import Path
 from stravalib.client import Client
 from urllib.parse import urlparse, parse_qs
+from .config import require_env
 from .fit_converter import FitConverter
 from .strava_activity import StravaActivity
 
@@ -13,10 +14,10 @@ class StravaClient:
         self.strava_dir: Path = data_dir / Path("strava")
         self.strava_dir.mkdir(parents=True, exist_ok=True)
 
-        self.token_path: Path = self.strava_dir / ".strava_token.json.old"
+        self.token_path: Path = self.strava_dir / "strava_token.json"
 
-        self.client_id: int = int(os.getenv("STRAVA_CLIENT_ID"))
-        self.client_secret: str = os.getenv("STRAVA_CLIENT_SECRET")
+        self.client_id: int = int(require_env("STRAVA_CLIENT_ID"))
+        self.client_secret: str = require_env("STRAVA_CLIENT_SECRET")
 
         self.client: Client = self._authenticate()
 
@@ -44,7 +45,11 @@ class StravaClient:
 
 
     def _establish_session(self) -> Client:
-        print("Strava - Session could be restored")
+        print("Strava - Session could not be restored")
+        # Authorizing needs a person to open the link, which is impossible in the Docker loop
+        if not sys.stdin.isatty():
+            raise RuntimeError("Strava - Not authorized. Run `python app/authenticate.py` first.")
+
         client = Client()
 
         # Get authorization code
@@ -84,15 +89,18 @@ class StravaClient:
             return self._establish_session()
 
         client = Client()
-        token_response = client.refresh_access_token(
-            client_id = self.client_id,
-            client_secret = self.client_secret,
-            refresh_token = token_dict.get("refresh_token"),
-        )
-
-        if not token_response:
+        try:
+            token_response = client.refresh_access_token(
+                client_id = self.client_id,
+                client_secret = self.client_secret,
+                refresh_token = token_dict.get("refresh_token"),
+            )
+        except Exception as e:
+            print(f"Strava - Token refresh failed: {e}")
             return self._establish_session()
 
+        # Strava can rotate the refresh token, so always keep the latest one
+        self._save_token(token_response)
         print("Strava - User logged in successfully")
         return client
 
@@ -112,7 +120,9 @@ class StravaClient:
                 to_append = True
             elif activity.sport_type.root == "Ride":
                 detailed_activity = self.client.get_activity(activity.id)
-                if "iGPSPORT".lower() in detailed_activity.device_name.lower():
+                # device_name is None for rides recorded without a device (e.g. manual entries)
+                device_name = detailed_activity.device_name or ""
+                if "igpsport" in device_name.lower():
                     to_append = True
 
             if to_append:

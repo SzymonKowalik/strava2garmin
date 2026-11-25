@@ -1,3 +1,5 @@
+import sys
+from stravalib.exc import RateLimitExceeded
 from utils import ActivityRegistry
 from utils import GarminClient
 from utils import StravaClient
@@ -10,7 +12,7 @@ def batch_convert_fit_files():
         garmin_client = GarminClient(DATA_DIR)
     except Exception as e:
         print(f"Could not connect to services. Error message: {e}")
-        exit(1)
+        sys.exit(1)
 
     # Loop through activities
     activities = strava_client.get_filtered_activities(ACTIVITY_LIMIT)
@@ -21,10 +23,16 @@ def batch_convert_fit_files():
         if activity_registry.is_processed(str(activity.id)):
             continue
 
-        # Upload activities
-        activity_file = strava_client.download_activity_file(activity)
-        if activity_file and garmin_client.upload_activity(activity_file):
-            activity_registry.mark_processed(str(activity.id))
+        # One broken activity must not block the rest, it is retried on the next run
+        try:
+            activity_file = strava_client.download_activity_file(activity)
+            if activity_file and garmin_client.upload_activity(activity_file):
+                activity_registry.mark_processed(str(activity.id))
+        except RateLimitExceeded:
+            print("Strava - Rate limit reached, stopping until the next run")
+            break
+        except Exception as e:
+            print(f"Failed to process activity {activity.id}: {e}")
 
     print("All files have been processed.")
 

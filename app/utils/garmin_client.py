@@ -1,7 +1,7 @@
 import garth
-import os
 from garth.exc import GarthHTTPError
 from pathlib import Path
+from .config import require_env
 
 class GarminClient:
     def __init__(self, data_dir: Path):
@@ -10,13 +10,7 @@ class GarminClient:
 
     def _login(self):
         # Login to Garmin Connect
-        login = os.getenv('GARMIN_LOGIN')
-        password = os.getenv('GARMIN_PASSWORD')
-
-        if not login or not password:
-            raise KeyError("Garmin - Could not find GARMIN_LOGIN and/or GARMIN_PASSWORD variable")
-
-        garth.login(login, password)
+        garth.login(require_env('GARMIN_LOGIN'), require_env('GARMIN_PASSWORD'))
         garth.save(self.garth_path)
         print("Garmin - Login successful")
 
@@ -24,8 +18,8 @@ class GarminClient:
         try:
             garth.resume(self.garth_path)
             print("Garmin - Session resumed")
-        except:
-            print("Garmin - Could not resume session. Logging in...")
+        except Exception as e:
+            print(f"Garmin - Could not resume session ({e}). Logging in...")
             self._login()
 
     @staticmethod
