@@ -3,7 +3,7 @@ from stravalib.exc import RateLimitExceeded
 from utils import ActivityRegistry
 from utils import GarminClient
 from utils import StravaClient
-from utils import DATA_DIR, ACTIVITIES_DIR, ACTIVITY_LIMIT, REGISTRY_PATH
+from utils import DATA_DIR, ACTIVITIES_DIR, ACTIVITY_LIMIT, REGISTRY_PATH, setup_logging
 
 def batch_convert_fit_files():
     try:
@@ -37,4 +37,5 @@ def batch_convert_fit_files():
     print("All files have been processed.")
 
 if __name__ == '__main__':
+    setup_logging()
     batch_convert_fit_files()

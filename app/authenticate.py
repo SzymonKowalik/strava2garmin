@@ -1,6 +1,7 @@
-from utils import GarminClient, StravaClient, DATA_DIR, ACTIVITIES_DIR
+from utils import GarminClient, StravaClient, DATA_DIR, ACTIVITIES_DIR, setup_logging
 
 def main():
+    setup_logging()
     # Authenticates, raises errors on failure
     StravaClient(DATA_DIR, ACTIVITIES_DIR)
     GarminClient(DATA_DIR)
