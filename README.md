@@ -12,18 +12,18 @@ Works with:
 **Note:** Zwift activities are skipped because they are natively compatible with Garmin Connect.
 
 ### Usage
-1. Create a [Strava API application](https://developers.strava.com/docs/getting-started/#account).
+1. Create a [Strava API application](https://developers.strava.com/docs/getting-started/#account). **Note:** Strava API access requires a Strava premium subscription.
 2. To authenticate with Strava and Garmin, create environment variables or `.env` file with content from `.env.example` file in the `app` folder.
-3. Install required dependencies `pip install -r requirements.txt`
+3. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and run `uv sync` to install the dependencies (Python 3.11+).
 ##### Manual
-4. To manually run program use `python app/sync.py`
+4. Run `uv run python app/sync.py`
 ##### Automated
-4. Run `python app/authenticate.py` and follow instructions to allow access to Strava activities.
+4. Run `uv run python app/authenticate.py` and follow instructions to allow access to Strava activities.
 5. Run `docker compose up` to start the service. It automatically synchronizes activities every hour.
 
 **Note:** On the first run you will need to follow instructions to allow access to Strava activities.<br><br>
-All activities will automatically be uploaded to Garmin Connect (Be aware, if you already had uploaded 
-activity manually, a duplicate will be created!)
+All matching activities will automatically be uploaded to Garmin Connect (Be aware, if you already had uploaded 
+activity manually, a duplicate may be created!)
 
 ### Configuration
 In `app/utils/config.py` you can change the default values for activity count and file paths.

@@ -1,10 +1,12 @@
 FROM python:3.14-slim
+COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /bin/uv
 
 WORKDIR /app
 
-# Install dependencies
-COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install locked dependencies first, so this layer stays cached until uv.lock changes
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the rest of the application
 COPY app/utils/ ./utils/
