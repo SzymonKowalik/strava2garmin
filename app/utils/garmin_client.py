@@ -18,8 +18,8 @@ class GarminClient:
         try:
             garth.resume(self.garth_path)
             print("Garmin - Session resumed")
-        except:
-            print("Garmin - Could not resume session. Logging in...")
+        except Exception as e:
+            print(f"Garmin - Could not resume session ({e}). Logging in...")
             self._login()
 
     @staticmethod
