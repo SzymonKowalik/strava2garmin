@@ -112,7 +112,9 @@ class StravaClient:
                 to_append = True
             elif activity.sport_type.root == "Ride":
                 detailed_activity = self.client.get_activity(activity.id)
-                if "iGPSPORT".lower() in detailed_activity.device_name.lower():
+                # device_name is None for rides recorded without a device (e.g. manual entries)
+                device_name = detailed_activity.device_name or ""
+                if "igpsport" in device_name.lower():
                     to_append = True
 
             if to_append:
