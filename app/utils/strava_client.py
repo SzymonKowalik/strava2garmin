@@ -1,3 +1,4 @@
+import logging
 import json
 import sys
 from pathlib import Path
@@ -45,7 +46,7 @@ class StravaClient:
 
 
     def _establish_session(self) -> Client:
-        print("Strava - Session could not be restored")
+        logging.warning("Strava - Session could not be restored")
         # Authorizing needs a person to open the link, which is impossible in the Docker loop
         if not sys.stdin.isatty():
             raise RuntimeError("Strava - Not authorized. Run `python app/authenticate.py` first.")
@@ -77,12 +78,12 @@ class StravaClient:
 
         self._save_token(token_response)
 
-        print("Strava - User logged in successfully")
+        logging.info("Strava - User logged in successfully")
 
         return client
 
     def _authenticate(self) -> Client:
-        print("Strava - Restoring user session")
+        logging.info("Strava - Restoring user session")
         token_dict = self._load_token()
 
         if not token_dict:
@@ -96,16 +97,16 @@ class StravaClient:
                 refresh_token = token_dict.get("refresh_token"),
             )
         except Exception as e:
-            print(f"Strava - Token refresh failed: {e}")
+            logging.warning(f"Strava - Token refresh failed: {e}")
             return self._establish_session()
 
         # Strava can rotate the refresh token, so always keep the latest one
         self._save_token(token_response)
-        print("Strava - User logged in successfully")
+        logging.info("Strava - User logged in successfully")
         return client
 
     def get_filtered_activities(self, limit=25) -> list[StravaActivity]:
-        print(f"Strava - Fetching latest {limit} activities")
+        logging.info(f"Strava - Fetching latest {limit} activities")
         activities = self.client.get_activities(limit=limit)
         filtered_activities: list[StravaActivity] = []
 
@@ -135,7 +136,7 @@ class StravaClient:
                     )
                 )
 
-        print(f"Strava - Activities fetched and filtered")
+        logging.info("Strava - Activities fetched and filtered")
         return filtered_activities
 
 
@@ -154,7 +155,7 @@ class StravaClient:
 
         file_path = self.input_dir / f"{activity.id}.fit"
 
-        print(f"Strava - Downloading activity with id: {activity.id}")
+        logging.info(f"Strava - Downloading activity with id: {activity.id}")
         if FitConverter.create_from_streams(serializable_data, activity, file_path):
             return file_path
 

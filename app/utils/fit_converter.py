@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -39,7 +40,7 @@ class FitConverter:
     def create_from_streams(streams: dict, activity: StravaActivity, output_path: Path) -> bool:
         time_stream = streams.get('time')
         if not time_stream:
-            print(f"Skipping activity {activity.id}: it has no time stream (manual activity?)")
+            logging.warning(f"Skipping activity {activity.id}: it has no time stream (manual activity?)")
             return False
 
         builder = FitFileBuilder(auto_define=True)
@@ -124,5 +125,5 @@ class FitConverter:
             fit_file.to_file(str(output_path))
             return True
         except Exception as e:
-            print(f"Failed to create FIT file: {e}")
+            logging.error(f"Failed to create FIT file: {e}")
             return False
