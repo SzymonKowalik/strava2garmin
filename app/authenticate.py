@@ -1,3 +1,4 @@
+import logging
 from utils import GarminClient, StravaClient, DATA_DIR, ACTIVITIES_DIR, setup_logging
 
 def main():
@@ -6,7 +7,7 @@ def main():
     StravaClient(DATA_DIR, ACTIVITIES_DIR)
     GarminClient(DATA_DIR)
 
-    print("Authenticated. You can now safely run recurring job.")
+    logging.info("Authenticated. You can now safely run recurring job.")
 
 if __name__ == "__main__":
     main()
