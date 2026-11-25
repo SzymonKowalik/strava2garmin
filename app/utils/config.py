@@ -40,3 +40,5 @@ def setup_logging() -> None:
         handlers=[logging.StreamHandler(), file_handler],
         force=True,  # a dependency configures the root logger on import, replace its handler
     )
+    # stravalib logs every API request at INFO, keep only its warnings and errors
+    logging.getLogger("stravalib").setLevel(logging.WARNING)
