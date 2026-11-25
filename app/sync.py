@@ -1,5 +1,6 @@
 import logging
 import sys
+from contextlib import closing
 from stravalib.exc import RateLimitExceeded
 from utils import SyncDatabase, ActivityStatus, RunStatus, SyncCounts
 from utils import GarminClient
@@ -49,19 +50,20 @@ def sync_activities(database: SyncDatabase, counts: SyncCounts) -> None:
 
 
 def batch_convert_fit_files() -> None:
-    database = SyncDatabase(DB_PATH)
-    run_id = database.start_run()
-    counts = SyncCounts()
+    # closing() also closes the connection when sys.exit() ends a failed run
+    with closing(SyncDatabase(DB_PATH)) as database:
+        run_id = database.start_run()
+        counts = SyncCounts()
 
-    try:
-        sync_activities(database, counts)
-    except Exception as e:
-        logging.exception("Sync run failed")
-        database.finish_run(run_id, RunStatus.FAILED, counts, error=str(e))
-        sys.exit(1)
+        try:
+            sync_activities(database, counts)
+        except Exception as e:
+            logging.exception("Sync run failed")
+            database.finish_run(run_id, RunStatus.FAILED, counts, error=str(e))
+            sys.exit(1)
 
-    database.finish_run(run_id, RunStatus.OK, counts)
-    logging.info(f"Sync run finished: {counts}")
+        database.finish_run(run_id, RunStatus.OK, counts)
+        logging.info(f"Sync run finished: {counts}")
 
 
 if __name__ == '__main__':

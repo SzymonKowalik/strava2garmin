@@ -65,6 +65,9 @@ class SyncDatabase:
         self._connection = sqlite3.connect(db_path)
         self._connection.executescript(SCHEMA)
 
+    def close(self) -> None:
+        self._connection.close()
+
     def should_process(self, strava_id: int) -> bool:
         row = self._connection.execute(
             "SELECT status, attempts FROM activities WHERE strava_id = ?", (strava_id,)
