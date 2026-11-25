@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -10,11 +11,17 @@ ACTIVITIES_DIR = BASE_DIR / Path('activities')
 DATA_DIR = BASE_DIR / Path('data')
 REGISTRY_FILE = 'activity_registry.json'
 
-# Load .env variables
-load_dotenv(BASE_DIR / ".env")
-
 # Ensure directories exist
 ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 REGISTRY_PATH = DATA_DIR / REGISTRY_FILE
+
+# Load .env variables
+load_dotenv(BASE_DIR / ".env")
+
+def require_env(name: str) -> str:
+    value = os.getenv(name)
+    if not value:
+        raise KeyError(f"Missing environment variable {name}. Set it in app/.env (see .env.example).")
+    return value
