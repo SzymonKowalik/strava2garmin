@@ -1,6 +1,6 @@
 from .fit_converter import FitConverter
-from .activity_registry import ActivityRegistry
+from .database import SyncDatabase, ActivityStatus
 from .garmin_client import GarminClient
 from .strava_client import StravaClient
 from .strava_activity import StravaActivity
-from .config import ACTIVITY_LIMIT, ACTIVITIES_DIR, REGISTRY_PATH, DATA_DIR, setup_logging
+from .config import ACTIVITY_LIMIT, ACTIVITIES_DIR, DATA_DIR, DB_PATH, setup_logging

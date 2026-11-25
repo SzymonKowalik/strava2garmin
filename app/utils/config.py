@@ -11,14 +11,14 @@ ACTIVITY_LIMIT = 25
 BASE_DIR = Path(__file__).resolve().parent.parent
 ACTIVITIES_DIR = BASE_DIR / Path('activities')
 DATA_DIR = BASE_DIR / Path('data')
-REGISTRY_FILE = 'activity_registry.json'
+DB_FILE = 'strava2garmin.db'
 LOG_FILE = 'strava2garmin.log'
 
 # Ensure directories exist
 ACTIVITIES_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-REGISTRY_PATH = DATA_DIR / REGISTRY_FILE
+DB_PATH = DATA_DIR / DB_FILE
 LOG_PATH = DATA_DIR / LOG_FILE
 
 # Load .env variables
