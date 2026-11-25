@@ -1,5 +1,5 @@
 from .fit_converter import FitConverter
-from .database import SyncDatabase, ActivityStatus
+from .database import SyncDatabase, ActivityStatus, RunStatus, SyncCounts
 from .garmin_client import GarminClient
 from .strava_client import StravaClient
 from .strava_activity import StravaActivity

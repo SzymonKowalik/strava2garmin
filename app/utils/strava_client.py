@@ -3,6 +3,7 @@ import json
 import sys
 from pathlib import Path
 from stravalib.client import Client
+from stravalib.model import SummaryActivity
 from urllib.parse import urlparse, parse_qs
 from .config import require_env
 from .fit_converter import FitConverter
@@ -105,40 +106,25 @@ class StravaClient:
         logging.info("Strava - User logged in successfully")
         return client
 
-    def get_filtered_activities(self, limit=25) -> list[StravaActivity]:
+    def get_latest_activities(self, limit: int) -> list[SummaryActivity]:
+        # One API call returns summaries of the newest activities
         logging.info(f"Strava - Fetching latest {limit} activities")
-        activities = self.client.get_activities(limit=limit)
-        filtered_activities: list[StravaActivity] = []
+        return list(self.client.get_activities(limit=limit))
 
-        for activity in activities:
-            to_append = False
+    def is_supported(self, activity: SummaryActivity) -> bool:
+        # Zwift uploads to Garmin Connect natively
+        if (activity.external_id or "").startswith('zwift'):
+            return False
 
-            # Skip zwift activities - native garmin connection
-            if (activity.external_id or "").startswith('zwift'):
-                continue
-
-            if activity.sport_type.root == "VirtualRide":
-                to_append = True
-            elif activity.sport_type.root == "Ride":
-                detailed_activity = self.client.get_activity(activity.id)
-                # device_name is None for rides recorded without a device (e.g. manual entries)
-                device_name = detailed_activity.device_name or ""
-                if "igpsport" in device_name.lower():
-                    to_append = True
-
-            if to_append:
-                filtered_activities.append(
-                    StravaActivity(
-                        activity.id,
-                        activity.start_date,
-                        activity.kilojoules,
-                        activity.sport_type.root
-                    )
-                )
-
-        logging.info("Strava - Activities fetched and filtered")
-        return filtered_activities
-
+        sport_type = activity.sport_type.root
+        if sport_type == "VirtualRide":
+            return True
+        if sport_type == "Ride":
+            # device_name is only on the detailed activity, which costs one extra API call.
+            # It is None for rides recorded without a device (e.g. manual entries).
+            device_name = self.client.get_activity(activity.id).device_name or ""
+            return "igpsport" in device_name.lower()
+        return False
 
     def download_activity_file(self, activity: StravaActivity) -> Path|None:
         types = ["latlng", "altitude", "time", "distance", "velocity_smooth", "heartrate", "cadence", "watts", "moving", "grade_smooth"]
