@@ -5,7 +5,7 @@ description = "Sync Strava rides to Garmin Connect with Garmin device info"
 requires-python = ">=3.11"
 dependencies = [
     "fit-tool>=0.9.15",
-    "garth>=0.6.3",
+    "garth==0.6.3",
     "python-dotenv>=1.2.2",
     "stravalib>=2.4",
 ]
